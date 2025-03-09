@@ -95,6 +95,19 @@ alias free='free -h'
 alias df='df -h'
 alias du='du -h'
 alias top='htop'  # Requiere instalar htop: sudo apt install htop
+alias ports='netstat -tulanp'  # Muestra puertos abiertos
+alias myip='curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me'  # Muestra IP pública
+alias clearhistory='history -c && history -w'  # Limpia el historial
+alias path='echo -e ${PATH//:/\\n}'  # Muestra PATH en líneas separadas
+alias weather='curl wttr.in'  # Muestra el clima actual (requiere conexión a internet)
+
+# Alias para comandos frecuentes de Docker, si está instalado
+if command -v docker &> /dev/null; then
+  alias dps='docker ps'
+  alias dimg='docker images'
+  alias dstop='docker stop $(docker ps -q)'  # Detiene todos los contenedores
+  alias drmc='docker rm $(docker ps -a -q)'  # Elimina todos los contenedores detenidos
+fi
 
 # Historial con fecha y hora
 export HISTTIMEFORMAT="%d/%m/%y %T "
@@ -125,3 +138,50 @@ extract() {
     echo "'$1' no es un archivo válido"
   fi
 }
+
+# Información del sistema en el inicio de la terminal
+system_info() {
+  # Colores
+  local RED="\033[1;31m"
+  local GREEN="\033[1;32m"
+  local YELLOW="\033[1;33m"
+  local BLUE="\033[1;34m"
+  local PURPLE="\033[1;35m"
+  local CYAN="\033[1;36m"
+  local WHITE="\033[1;37m"
+  local RESET="\033[0m"
+  
+  # Sistema y kernel
+  echo -e "${BLUE}Sistema:${RESET} $(uname -o) $(uname -m)"
+  echo -e "${RED}Kernel:${RESET} $(uname -r)"
+  echo -e "${GREEN}Uptime:${RESET} $(uptime -p | sed 's/up //')"
+  
+  # Uso de memoria y disco
+  echo -e "${YELLOW}Memoria:${RESET} $(free -h | awk '/^Mem:/ {print $3 " de " $2 " usado"}')"
+  echo -e "${PURPLE}Disco:${RESET} $(df -h --output=used,size / | awk 'NR==2 {print $1 " de " $2 " usado"}')"
+  
+  # Carga del sistema
+  echo -e "${CYAN}Carga:${RESET} $(cat /proc/loadavg | cut -d' ' -f1-3)"
+  echo ""
+}
+
+# Descomentar para mostrar información del sistema al iniciar la terminal
+# system_info
+
+# Mejoras para git
+if [ -f /usr/lib/git-core/git-sh-prompt ]; then
+  . /usr/lib/git-core/git-sh-prompt
+  export GIT_PS1_SHOWDIRTYSTATE=1
+  export GIT_PS1_SHOWSTASHSTATE=1
+  export GIT_PS1_SHOWUNTRACKEDFILES=1
+  
+  # Añadir información de git al prompt si estamos en un repositorio
+  PS1_original=$PS1
+  if [ $(id -u) -eq 0 ]; then
+    # Usuario root - prompt en rojo
+    PS1='\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(__git_ps1 " (%s)")\$ '
+  else
+    # Usuario normal - prompt en verde
+    PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(__git_ps1 " (%s)")\$ '
+  fi
+fi
