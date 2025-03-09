@@ -45,8 +45,8 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 # Definir editor predeterminado
-export EDITOR=nano
-# export EDITOR=vim  # Descomenta esta línea si prefieres vim
+# export EDITOR=nano
+export EDITOR=vim
 
 # Mejorar el comando cd
 # 'cd -' para volver al directorio anterior
@@ -100,14 +100,6 @@ alias myip='curl -s https://ipinfo.io/ip || curl -s https://ifconfig.me'  # Mues
 alias clearhistory='history -c && history -w'  # Limpia el historial
 alias path='echo -e ${PATH//:/\\n}'  # Muestra PATH en líneas separadas
 alias weather='curl wttr.in'  # Muestra el clima actual (requiere conexión a internet)
-
-# Alias para comandos frecuentes de Docker, si está instalado
-if command -v docker &> /dev/null; then
-  alias dps='docker ps'
-  alias dimg='docker images'
-  alias dstop='docker stop $(docker ps -q)'  # Detiene todos los contenedores
-  alias drmc='docker rm $(docker ps -a -q)'  # Elimina todos los contenedores detenidos
-fi
 
 # Historial con fecha y hora
 export HISTTIMEFORMAT="%d/%m/%y %T "
